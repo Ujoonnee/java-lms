@@ -75,11 +75,24 @@ public class Question {
 
     public void checkAuthority(NsUser user) throws CannotDeleteException {
         checkOwner(user);
+        checkAnswerByOthers();
     }
 
     private void checkOwner(NsUser user) throws CannotDeleteException {
         if (!isOwner(user)) {
             throw new CannotDeleteException("질문을 삭제할 권한이 없습니다.");
+        }
+    }
+
+    private void checkAnswerByOthers() throws CannotDeleteException {
+        for (Answer answer : answers) {
+            checkSameWriter(answer);
+        }
+    }
+
+    private void checkSameWriter(Answer answer) throws CannotDeleteException {
+        if (!answer.isOwner(this.writer)) {
+            throw new CannotDeleteException("다른 사람이 쓴 답변이 있어 삭제할 수 없습니다.");
         }
     }
 
